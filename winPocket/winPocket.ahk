@@ -3,6 +3,8 @@
 
 ; Simple script used to place active window to four corners of the current window's monitor
 
+#include ../functions/transparencyFunctions.ahk
+
 
 ; https://autohotkey.com/board/topic/94735-get-active-monitor/
 
@@ -36,9 +38,9 @@ GetMonitor(hwnd := 0) {
 
 ; return coordinates for window position based on current monitor
 
+	; returns [x start, y start, width, height]
 getCoordinates(position)
 {
-	; returns [x start, y start, width, height]
 
 	index := GetMonitor()
 	SysGet, Mon, MonitorWorkArea, %index%
@@ -94,12 +96,13 @@ getCoordinates(position)
 
 placeAndResize(id)
 {
-	WinRestore, A
+	fadeInWindow(False, 30)
 	range := getCoordinates(id)
-	WinMove, A,, range[1], range[2] ; add offset for toolbar
-	WinMove, A,,,, range[3], range[4]
+	WinRestore, A
+	WinMove, A, , range[1], range[2] ; add offset for toolbar
+	WinMove, A, , , ,range[3], range[4]
+	fadeInWindow(True, 30)
 }
-
 
 
 ^NumPad4::
