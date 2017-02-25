@@ -1,11 +1,5 @@
-; author: MatzJB
-; date: February 22, 2017
-
-; Simple script used to place active window to four corners of the current window's monitor
-
 #include ../functions/transparencyFunctions.ahk
-
-
+; Simple script used to place active window to four corners of the current window's monitor
 ; https://autohotkey.com/board/topic/94735-get-active-monitor/
 
 GetMonitor(hwnd := 0) {
@@ -35,13 +29,10 @@ GetMonitor(hwnd := 0) {
 }
 
 
-
 ; return coordinates for window position based on current monitor
-
-	; returns [x start, y start, width, height]
+; returns [x start, y start, width, height]
 getCoordinates(position)
 {
-
 	index := GetMonitor()
 	SysGet, Mon, MonitorWorkArea, %index%
 	
@@ -51,39 +42,46 @@ getCoordinates(position)
 	rangeUL := [MonLeft, MonTop, sWidth*0.5, sHeight*0.5]
 	rangeUR := [MonLeft+sWidth*0.5, MonTop, sWidth*0.5, sHeight*0.5]
 	
-	rangeLL := [MonLeft, MonTop + sHeight*0.5, sWidth*0.5, sHeight*0.5]
-	rangeLR := [MonLeft + sWidth*0.5, MonTop + sHeight*0.5, sWidth*0.5, sHeight*0.5]
+	rangeLL := [MonLeft, MonTop+sHeight*0.5, sWidth*0.5, sHeight*0.5]
+	rangeLR := [MonLeft+sWidth*0.5, MonTop+sHeight*0.5, sWidth*0.5, sHeight*0.5]
 	
-	rangeC := [MonLeft + sWidth*0.25, MonTop + sHeight*0.25, sWidth*0.5, sHeight*0.5]
+	rangeC := [MonLeft+sWidth*0.25, MonTop+sHeight*0.25, sWidth*0.5, sHeight*0.5]
 	rangeL := [MonLeft, MonTop, sWidth*0.5, sHeight]
 	rangeR := [MonLeft+sWidth*0.5, MonTop, sWidth*0.5, sHeight]
-
-
-	if (position==4)
-	{
-		return rangeL
-	}
-	if (position==6)
-	{
-		return rangeR
-	}
-	; center
-	if (position==5)
-	{
-		return rangeC
-	}
+	rangeT := [MonLeft, MonTop, sWidth, sHeight*0.5]
+	rangeB := [MonLeft, MonTop+sHeight*0.5, sWidth, sHeight*0.5]
 
 	if (position==1)
 	{
 		return rangeLL
 	}
+	if (position==2)
+	{
+		return rangeB
+	}
 	if (position==3)
 	{
 		return rangeLR
 	}
+	if (position==4)
+	{
+		return rangeL
+	}
+	if (position==5)
+	{
+		return rangeC
+	}
+	if (position==6)
+	{
+		return rangeR
+	}
 	if (position==7)
 	{
 		return rangeUL
+	}
+	if (position==8)
+	{
+		return rangeT
 	}
 	if (position==9)
 	{
@@ -99,36 +97,36 @@ placeAndResize(id)
 	fadeInWindow(False, 30)
 	range := getCoordinates(id)
 	WinRestore, A
-	WinMove, A, , range[1], range[2] ; add offset for toolbar
+	WinMove, A, ,range[1], range[2]
 	WinMove, A, , , ,range[3], range[4]
 	fadeInWindow(True, 30)
 }
 
 
-^NumPad4::
-	placeAndResize(4)
-return
-
-^NumPad6::
-	placeAndResize(6)
-return
-
-^NumPad5::
-	placeAndResize(5)
-return
-
 ^NumPad1::
 	placeAndResize(1)
 return
-
+^NumPad2::
+	placeAndResize(2)
+return
 ^NumPad3::
 	placeAndResize(3)
 return
-
+^NumPad4::
+	placeAndResize(4)
+return
+^NumPad5::
+	placeAndResize(5)
+return
+^NumPad6::
+	placeAndResize(6)
+return
 ^NumPad7::
 	placeAndResize(7)
 return
-
+^NumPad8::
+	placeAndResize(8)
+return
 ^NumPad9::
 	placeAndResize(9)
 return
