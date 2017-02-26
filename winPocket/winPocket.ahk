@@ -1,4 +1,9 @@
+; 
+
 #include ../functions/transparencyFunctions.ahk
+#include ../functions/arrayFunctions.ahk
+
+
 ; Simple script used to place active window to four corners of the current window's monitor
 ; https://autohotkey.com/board/topic/94735-get-active-monitor/
 
@@ -39,6 +44,8 @@ getCoordinates(position)
 	sWidth := Abs(MonRight - MonLeft)
 	sHeight := Abs(MonTop - MonBottom)
 
+	rangeMax := [MonLeft, MonTop, sWidth, sHeight]
+
 	rangeUL := [MonLeft, MonTop, sWidth*0.5, sHeight*0.5]
 	rangeUR := [MonLeft+sWidth*0.5, MonTop, sWidth*0.5, sHeight*0.5]
 	
@@ -69,6 +76,13 @@ getCoordinates(position)
 	}
 	if (position==5)
 	{
+		WinGetPos, X, Y, Width, Height, A
+		rangeCu := roundArray([X, Y, Width, Height])
+		rangeC := roundArray(rangeC)
+		
+		if compareArrays(rangeC, rangeCu)
+			return rangeMax
+
 		return rangeC
 	}
 	if (position==6)
