@@ -1,8 +1,21 @@
-; 
-
 #include ../functions/transparencyFunctions.ahk
 #include ../functions/arrayFunctions.ahk
 
+; global variables
+	global rangeMax := [0,0,0,0]
+
+	global rangeUL := [0,0,0,0]
+	global rangeUR := [0,0,0,0]
+	
+	global rangeLL := [0,0,0,0]
+	global rangeLR := [0,0,0,0]
+	
+	global rangeC := [0,0,0,0]
+	global rangeL := [0,0,0,0]
+	global rangeR := [0,0,0,0]
+	global rangeT := [0,0,0,0]
+	global rangeB := [0,0,0,0]
+	global index
 
 ; Simple script used to place active window to four corners of the current window's monitor
 ; https://autohotkey.com/board/topic/94735-get-active-monitor/
@@ -34,13 +47,9 @@ GetMonitor(hwnd := 0) {
 }
 
 
-; return coordinates for window position based on current monitor
-; returns [x start, y start, width, height]
-getCoordinates(position)
-{
+updateRanges:
 	index := GetMonitor()
 	SysGet, Mon, MonitorWorkArea, %index%
-	
 	sWidth := Abs(MonRight - MonLeft)
 	sHeight := Abs(MonTop - MonBottom)
 
@@ -58,6 +67,16 @@ getCoordinates(position)
 	rangeT := [MonLeft, MonTop, sWidth, sHeight*0.5]
 	rangeB := [MonLeft, MonTop+sHeight*0.5, sWidth, sHeight*0.5]
 
+return
+
+; return coordinates for window position based on current monitor
+; returns [x start, y start, width, height]
+getCoordinates(position)
+{
+	SysGet, MonitorCount, MonitorCount
+	
+	gosub updateRanges
+
 	if (position==1)
 	{
 		return rangeLL
@@ -72,6 +91,12 @@ getCoordinates(position)
 	}
 	if (position==4)
 	{
+		;gosub updateRanges
+		WinGetPos, X, Y, Width, Height, A
+		rangeCu := roundArray([X, Y, Width, Height])
+		rangeL := roundArray(rangeL)
+		if compareArrays(rangeL, rangeCu)
+			return rangeR
 		return rangeL
 	}
 	if (position==5)
@@ -82,11 +107,16 @@ getCoordinates(position)
 		
 		if compareArrays(rangeC, rangeCu)
 			return rangeMax
-
 		return rangeC
 	}
-	if (position==6)
+	if (position==6) ; move to next monitor on L
 	{
+		WinGetPos, X, Y, Width, Height, A
+		rangeCu := roundArray([X, Y, Width, Height])
+		rangeR := roundArray(rangeR)
+
+		if compareArrays(rangeR, rangeCu)
+			return rangeL
 		return rangeR
 	}
 	if (position==7)
@@ -102,18 +132,27 @@ getCoordinates(position)
 		return rangeUR
 	}
 
-	return [-1, -1, -1, -1]
+	return [-1,-1,-1,-1]
 }
 
 
 placeAndResize(id)
 {
-	fadeInWindow(False, 30)
+	fadeInWindow(False, 10)
 	range := getCoordinates(id)
-	WinRestore, A
-	WinMove, A, ,range[1], range[2]
-	WinMove, A, , , ,range[3], range[4]
-	fadeInWindow(True, 30)
+	if compareArrays(range, rangeMax)
+	{
+		WinRestore, A
+		WinMaximize, A
+	}
+	else
+	{
+		WinRestore, A
+		WinMove, A, ,range[1], range[2]
+		WinMove, A, , , ,range[3], range[4]
+	}
+	fadeInWindow(True, 10)
+
 }
 
 
