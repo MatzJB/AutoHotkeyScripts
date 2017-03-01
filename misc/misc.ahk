@@ -14,6 +14,7 @@ $^g:: ; Google
 	{
 		Send ^c
 		Run, http://www.google.com/search?q=%clipboard%
+		WinActivate, A
 	}
 	else
 		send ^g
@@ -26,6 +27,7 @@ $^y:: ; TouTube
 		msgbox, %WinTitle%
 		Send ^c
 		Run, https://www.youtube.com/results?search_query=%clipboard%
+		WinActivate, A
 	}
 	else
 		send ^y
